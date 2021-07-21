@@ -182,8 +182,222 @@ Cependant, des erreurs apparaissent :
 Il est donc nécessaire, dans un premier temps de configurer son localhoost et son Wamp pour envoyer des emails.
 
 
+## Création du formulaire de connexion / Identification.
 
-## Création des CRUD
+On utilise là le tuto de [Mamadou](https://www.kaherecode.com/tutorial/creer-un-blog-avec-symfony-4-authentification-et-autorisation-2)
+
+
+        php bin/console make:auth
+
+
+On a sélectionné 1 pour le form, on a utilisé les noms proposés et conservé le Authenticator comme proposé.
+
+En allant sur [login](http://localhost:8000/login) on peut se connecter, sauf qu'il y a un problème de redirection.
+
+On rajoute donc la partie 
+
+        return new RedirectResponse($this->urlGenerator->generate('homepage'));
+
+Dans la fonction 
+
+        public function onAuthenticationSuccess
+
+
+Ensuite, on va dans controller -> SecurityController et ajqsouter 
+ 
+        /**
+            * @Route("/home", name="home")
+            */
+            public function index(): Response
+            {
+                return $this->render('base.html.twig');
+            }
+
+Cela va nous permettre temporairement de se connecter. Cela sera changé plus tard quand on aurra notre page index. A ce moment là, on changera la route depuis le bon controller.
+
+**REMARQUE** : il est possible d'activer le "se souvenir de soit", en décommentant la div suivante située dans template -> security -> login 
+
+
+             <div class="checkbox mb-3">
+            <label>
+                <input type="checkbox" name="_remember_me"> Remember me
+            </label>
+        </div>
+
+
+A ce stade, on peut vérifier que 
+  - la page register fonctionne bien - la redirection ne fonctionne pas - ce sera vu plus tard.
+  - la pager login fonctionne - la redirection vers home fonctionne.  
+
+## Création de l'espace admin
+
+Maintenant dans le fichier config -> routes.yaml
+
+On 
+ - déinsdexe les 3 premières lignes
+ - modifie le path
+ - remplace index par home
+
+Ensuite, pour l'espace admin on rajoute dans ce même fichier
+
+
+        admin:
+        path: /admin
+        controller: App\Controller\DefaultController::admin
+
+
+Au final ce fichier est donc composé des lignes suivantes :
+
+        home:
+    path: /home
+    controller: App\Controller\DefaultController::index
+
+        admin:
+    path: /admin
+    controller: App\Controller\DefaultController::admin
+
+
+Maintenant, comme on a définit un controller par défaut, il faut le créer manuellement dans src -> controller et je le nomme DefaultController pour respecter ce qui a été indiqué dans  mon routes.yaml
+
+Dedans, je mets les informations suivantes :
+
+        <?php
+
+        namespace App\Controller;
+
+        use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+        use Symfony\Component\HttpFoundation\Response;
+        use Symfony\Component\Routing\Annotation\Route;
+
+
+        class DefaultController extends AbstractController {
+        /**
+        * @Route("/home", name="home")
+            */
+            public function index(): Response
+            {
+                return $this->render('home.html.twig');
+            }
+
+        }
+
+
+A QUOI SERT CE CONTROLLER ? A VOIR PLUS TARD !!!
+
+
+**REMARQUE** Dès qu'on touche à un fichier de ENTITY on doit **OBLIGATOIREMENT** faire les deux commandes de migrations (migrate:migration)
+
+On doit également ajouter dans le Default controller
+
+        use App\Entity\User;
+
+Ensuite, dans la fonction, on ajoute
+
+            public function admin()
+    {
+        $articles = $this->getDoctrine()->getRepository(Article::class)->findBy(
+            [],
+            ['lastUpdateDate' => 'DESC']
+        );
+
+        $users = $this->getDoctrine()->getRepository(User::class)->findAll();
+
+        return $this->render('admin.html.twig', [
+            //'car' => $car,
+            'users' => $users
+        ]);
+    }
+
+De là on créé un nouveau fichier dans template nommé admin.html.twig. C'est ici qu'on aura une overview accessible qu'aux admins.
+On a copié ensuite le code de Mamadou en remplaçant content par body et en commentant toute la div articles car elle nous servira plus tard pour la gestion des voitures.
+
+Au niveau visuel, on a maintenant une page avec le contenu de la BDD. Néanmoins, elle est limité dans les informations affichées, donc il faut faire le complément d'informations.
+
+Donc on complête et une fois le tableau pas trop mal on continue.
+L'aspect esthétique viendra plus tard.
+
+## Interdire l'accès à l'administration
+
+D'abord, on va devoir créer les roles d'accès.
+
+Dans le security -> yaml et dans access_control: tout en bas, on décommente 
+
+
+       - { path: ^/admin, roles: ROLE_ADMIN }
+
+En rechargeant la page précédente [admin](http://localhost:8000/admin) on a un access denied qui pop si on est connecté.
+Si on n'est pas connecté, cela renvoit vers le login.
+
+Pour le moment, quand on se connecte on est tous des **users** et non des admins.
+
+Maintenant il faut ajouter un role adminsitrateur.
+
+On va donc dans src/Entity/User.php on rajoute tout en bas
+
+
+            public function addRoles(string $roles): self
+    {
+        if (!in_array($roles, $this->roles)) {
+            $this->roles[] = $roles;
+        }
+
+        return $this;
+    }
+
+Et dans le terminal on entre
+
+        php bin/console make:command
+
+Pour le nom, on lui donne app:user:promote
+
+Cela va ajouter un nouveau dossier dans src -> command -> UserPormoteCommand
+on remplace par les données de Mamadou
+
+Avec la fonction 
+
+        $ php bin/console app:user:promote email@email.com ROLE_ADMIN
+
+
+
+Cela permet de transformer un compte en ADMIN en lui rajoutant le role qui va bien. sachant que par défaut, le role est USER
+
+Maintenant que notre admin a accès à son domaine d'aministration, on doit vérouiller l'accès au controller.
+Pour cela, il suffit de rajouter dans src\Controller\DefaultController.php
+
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+
+## Création des CRUD 
+**RAPPEL** la commande à utiliser est 
+
+        php bin/console make:crud
+
+
+En nom on va utiliser 
+  - User
+  - Car
+
+Et on va utiliser les noms proposés pour les controllers
+
+
+On en profite pour faire une petite modification dans admin.html/twig où on va remplacer
+
+
+        <td>{{ user.isVerified }}</td>
+        par
+        <td>{{ user.isVerified ? 'Yes' : 'No' }}</td>
+
+
+Cela nous permet d'avoir une homogénéité d'informations entre la page user et la page admin (qui n'affichait pas le isVerified)
+
+
+Maintenant, on va rajouter quelques contraintes dans src/controller/ CarController et UserController.
+En annotations on ajoute simplement 
+
+        @IsGranted("ROLE_ADMIN")
+
+Cela va permettre de dire que l'action concernée n'est possible que si on est admin.
+Par exemple, créer un nouvel utilisateur, c'est tout le monde (sinon on n'a pas de nouvel utilisateur) Mais éditer une voiture c'est l'admin.
 
 
 
@@ -192,5 +406,6 @@ Il est donc nécessaire, dans un premier temps de configurer son localhoost et s
 > -  enregistrer le merise dans le dossier lamanu/LOKAUTO
 > -  faire le mokup
 > -  faire le zooning
+> -  configurer l'envoie de mail (https://www.copier-coller.com/envoyer-des-mails-en-local-avec-wamp/)
  
 >
