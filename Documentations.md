@@ -4,6 +4,7 @@
 ***
 Ici se trouve la **"feuille de route"** de ce projet.
 Il y a donc le déroulé de l'installation des différents éléments, les tatonnements rencontrés, les actions à mener et autre.
+Je recoimmande quand même de lire un peu tout même si c'est un gros pavé car parfois je reviens en arrière (feuille de route oibligé)
 
 ***
 
@@ -63,7 +64,7 @@ Ensuite, on créé une nouvelle entity avec php bin/console make:entity
 - endDate
 - users relation  User ManyToOne non vide
 
-### Création des entités :
+### Entités manquantes :
  - Seat smallint
  - Fleet string 50
  - Mark string 50
@@ -181,6 +182,7 @@ Cependant, des erreurs apparaissent :
 
 Il est donc nécessaire, dans un premier temps de configurer son localhoost et son Wamp pour envoyer des emails.
 
+***
 
 ## Création du formulaire de connexion / Identification.
 
@@ -228,6 +230,9 @@ Cela va nous permettre temporairement de se connecter. Cela sera changé plus ta
 A ce stade, on peut vérifier que 
   - la page register fonctionne bien - la redirection ne fonctionne pas - ce sera vu plus tard.
   - la pager login fonctionne - la redirection vers home fonctionne.  
+
+
+***
 
 ## Création de l'espace admin
 
@@ -316,6 +321,9 @@ Au niveau visuel, on a maintenant une page avec le contenu de la BDD. Néanmoins
 Donc on complête et une fois le tableau pas trop mal on continue.
 L'aspect esthétique viendra plus tard.
 
+
+***
+
 ## Interdire l'accès à l'administration
 
 D'abord, on va devoir créer les roles d'accès.
@@ -366,6 +374,7 @@ Pour cela, il suffit de rajouter dans src\Controller\DefaultController.php
 
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
+***
 
 ## Création des CRUD 
 **RAPPEL** la commande à utiliser est 
@@ -404,6 +413,7 @@ Après quelques tests, IsGranted s'avère n'être possible que pour Symfony6 hor
 
 #IsGranted est à revoir plus **TARD** !
 
+***
 
 ## Un peu de front !!
 
@@ -415,7 +425,11 @@ On commence par installer le [composer](https://symfony.com/doc/current/bundles/
 
 
         
-Puis on créé le [dashboard](https://symfony.com/doc/current/bundles/EasyAdminBundle/dashboards.html)
+Puis on créé le [dashboard](https://symfony.com/doc/current/bundles/EasyAdminBundle/dashboards.html) avec la commande 
+
+        symfony console make:admin:dashboard
+
+    
 
 Sauf que maintenant tout est cassé ! Mais ce n'est pas grave.
 Déjà, dans routes.yaml, on retire la partie admin.
@@ -430,8 +444,9 @@ On va améliorer encore un peu le chemin !
 On retourne dans routes.yaml et on y change la seconde partie par
 
         admin:
-  path: /admin
-  controller: App\Controller\Admin\DashboardController::index
+            path: /admin
+            controller: App\Controller\Admin\DashboardController::index
+
 
 ### Ajout des CRUD pour le dashboard
 
@@ -459,13 +474,105 @@ Maintenant, on rajoute le code suivant dans \src\Controller\Admin\DashboardContr
 
 Certaines parties sont commentées car on ne peut rien faire pour le moment.
 
+### Customisation de Easyadmin
+**ATTENTION** Cela partant dans tous les sens bien **TOUT** lire avant de suivre
+
+On va se baser sur la vidéo de [Yoandev](https://www.youtube.com/watch?v=g6cYQ3IXGHY)
+
+#### Titre en haut à gauche
+
+src\Controller\Admin\DashboardController.php et dedans  aller en ligne 27 pour moi où il y a
+
+        ->setTitle('LokAuto');
+
+
+LokAuto peut être alors changé en ce que l'on veut.
+
+On va dans DashbordController et 
+
+    public function index(): Response
+    {
+        return parent::index();
+        remplacé par  return $this->render('admin/dashbord.html.twig');
+    }
+
+Maintenant on créé un dossier admin dans templates et dedans on créé un fichoer dashboard.html.twig
+
+En testant on a bien une page planche.
+
+
+Dans la page dashboard, il faut faire attention de bien respecter les noms des blocs.
+
+Pour voir la composition des pages de EsayAdmin par défaut, c'est dans pour le layout par exemple : 
+
+        LokAuto\vendor\easycorp\easyadmin-bundle\src\Resources\views\layout.html.twig
+
+
+
+On va essayer de faire sur le dashboard un truc plus sympa avec des cards
+
+#### Traductions
+
+En utilisant la commande
+
+        php bin/console translation:update --force fr --format yaml
+
+
+On a des traductions automatiquement générées. On peut voir tout ce qui a été traduit en allant dans translations.
+**ATTENTION** dans les fichiers on a par exemple : d'authentification en d''authentification
+
+Ensuite, dans le fichier translations on créé un fichier nommé messages.fr.yaml
+
+Et là on traduit les différents éléments.
+Par exemple :
+
+        Dashbord : Tableau de bord
+
+
+Cela permet d'obtenir une traduction easywin 👍
+
+Finalement on retourne dans DashbordController sur 
+
+        return parent::index();
+
+
+Au lieu de return $this->render('admin/dashboard.html.twig'); 
+
+Les filles c'est versatile !!! 😎😁😂😁
+
+
+Maintenant, on a mis en commentaires toute la partie dans le blxock content et on l'a remplacé par un titre.
+Cela fonctionne.
+
+On peut donc à présent customiser cette page comme on le souhaite. Par exemple en rajoutant des cards.
+
+Modifications 
+
+Dans le fichiers layout.html.twig je modifie la ligne 15. Je l'ai dupliquée et retiré la partie centrale.
+
+        {{ block('content_title')|striptags|raw }}
+
+
+Ensuite, le page-title devient title tout court :
+
+        <title>{% block title %} Hello 🤑{% endblock %}</title>
+
+
+Cela va permettre de nommer l'onglet de la page. Auparavant, c'était le nom du titre de la page. Là on a deux entitées distincs et indépendantes.
+
+En effet, c'est dans welcome.yaml qu'on a le contenu du milieu du dashboard.
 
 
 
 
 
 
->  ### Actions a réaliser
+
+
+
+
+
+### Actions a réaliser
 > -  refaire le merise
 > -  enregistrer le merise dans le dossier lamanu/LOKAUTO
 > -  faire le mokup
