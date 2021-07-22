@@ -26,7 +26,6 @@ class CarController extends AbstractController
     }
 
     /**
-     * @IsGranted("ROLE_ADMIN")
      * @Route("/new", name="car_new", methods={"GET","POST"})
      */
     public function new(Request $request): Response
@@ -60,7 +59,6 @@ class CarController extends AbstractController
     }
 
     /**
-     * @IsGranted("ROLE_ADMIN")
      * @Route("/{id}/edit", name="car_edit", methods={"GET","POST"})
      */
     public function edit(Request $request, Car $car): Response
@@ -81,7 +79,6 @@ class CarController extends AbstractController
     }
 
     /**
-     * @IsGranted("ROLE_ADMIN")
      * @Route("/{id}", name="car_delete", methods={"POST"})
      */
     public function delete(Request $request, Car $car): Response

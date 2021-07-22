@@ -400,6 +400,70 @@ Cela va permettre de dire que l'action concernée n'est possible que si on est a
 Par exemple, créer un nouvel utilisateur, c'est tout le monde (sinon on n'a pas de nouvel utilisateur) Mais éditer une voiture c'est l'admin.
 
 
+Après quelques tests, IsGranted s'avère n'être possible que pour Symfony6 hors on est en LTS (version 5) De ce fait, cela ne fonctionne pas.
+
+#IsGranted est à revoir plus **TARD** !
+
+
+## Un peu de front !!
+
+On va créer un beau dashboard pour l'admin. :) - Merci Gab \o/
+
+On commence par installer le [composer](https://symfony.com/doc/current/bundles/EasyAdminBundle/index.html) nécessaire :
+
+        composer require easycorp/easyadmin-bundle
+
+
+        
+Puis on créé le [dashboard](https://symfony.com/doc/current/bundles/EasyAdminBundle/dashboards.html)
+
+Sauf que maintenant tout est cassé ! Mais ce n'est pas grave.
+Déjà, dans routes.yaml, on retire la partie admin.
+Ensuite, si cela le demande, on **clear cache** avec la commande 
+
+        php bin/console cache:clear
+
+Et un beau dashboard apparaît !       
+
+On va améliorer encore un peu le chemin !
+
+On retourne dans routes.yaml et on y change la seconde partie par
+
+        admin:
+  path: /admin
+  controller: App\Controller\Admin\DashboardController::index
+
+### Ajout des CRUD pour le dashboard
+
+        symfony console make:admin:crud
+
+Et choisir Car et User et laisser par défaut les propositions.
+
+Maintenant, on rajoute le code suivant dans \src\Controller\Admin\DashboardController.php :
+
+                yield MenuItem::linktoDashboard('Dashboard', 'fa fa-home');
+        // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
+
+        yield MenuItem::section('Utilisateurs');
+        yield MenuItem::linkToCrud('Liste', 'fas fa-users', User::class);
+        yield MenuItem::linkToCrud('Ajout', 'fas fa-user-plus', User::class)->setAction('new');
+        //yield MenuItem::section('Locations');
+        //yield MenuItem::linkToCrud('Liste', 'fas fa-car', Rental::class);
+        //yield MenuItem::linkToCrud('Ajout', 'fas fa-user-plus', Rental::class)->setAction('new');
+        yield MenuItem::section('Voitures');
+        yield MenuItem::linkToCrud('Liste', 'fas fa-car', Car::class);
+        yield MenuItem::linkToCrud('Ajout', 'fas fa-user-plus', Car::class)->setAction('new');
+        yield MenuItem::section();
+        yield MenuItem::linkToLogout('Déconnexion', 'fa fa-sign-out-alt');
+
+
+Certaines parties sont commentées car on ne peut rien faire pour le moment.
+
+
+
+
+
+
 
 >  ### Actions a réaliser
 > -  refaire le merise
@@ -407,5 +471,6 @@ Par exemple, créer un nouvel utilisateur, c'est tout le monde (sinon on n'a pas
 > -  faire le mokup
 > -  faire le zooning
 > -  configurer l'envoie de mail (https://www.copier-coller.com/envoyer-des-mails-en-local-avec-wamp/)
+> - sur le dashboard faire en sorte que dès que'on va dans un lien l'url ne soit pas crappy
  
 >

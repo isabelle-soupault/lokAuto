@@ -16,7 +16,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserController extends AbstractController
 {
     /**
-     * @IsGranted("ROLE_ADMIN")
      * @Route("/", name="user_index", methods={"GET"})
      */
     public function index(UserRepository $userRepository): Response
@@ -80,7 +79,6 @@ class UserController extends AbstractController
     }
 
     /**
-     * @IsGranted("ROLE_ADMIN")
      * @Route("/{id}", name="user_delete", methods={"POST"})
      */
     public function delete(Request $request, User $user): Response

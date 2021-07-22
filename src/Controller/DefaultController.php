@@ -19,9 +19,7 @@ class DefaultController extends AbstractController {
 
     public function admin()
     {
-        /**
-     * @IsGranted("ROLE_ADMIN")
-     */
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $users = $this->getDoctrine()->getRepository(User::class)->findAll();
 
         return $this->render('admin.html.twig', [
