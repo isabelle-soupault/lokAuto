@@ -500,13 +500,7 @@ Maintenant on créé un dossier admin dans templates et dedans on créé un fich
 
 En testant on a bien une page planche.
 
-
-Dans la page dashboard, il faut faire attention de bien respecter les noms des blocs.
-
-Pour voir la composition des pages de EsayAdmin par défaut, c'est dans pour le layout par exemple : 
-
-        LokAuto\vendor\easycorp\easyadmin-bundle\src\Resources\views\layout.html.twig
-
+***ATTENTION** Si tous les dossiers de easyAdmin sont dans vendor il est **INTERDIT** de les modifier. C'est une librairie !!!!!
 
 
 On va essayer de faire sur le dashboard un truc plus sympa avec des cards
@@ -531,46 +525,45 @@ Par exemple :
 
 Cela permet d'obtenir une traduction easywin 👍
 
-Finalement on retourne dans DashbordController sur 
+***
+  ### Remplacer l'adresse email par le nom et prénom
 
-        return parent::index();
+Dans src\Entity\User.php
 
-
-Au lieu de return $this->render('admin/dashboard.html.twig'); 
-
-Les filles c'est versatile !!! 😎😁😂😁
-
-
-Maintenant, on a mis en commentaires toute la partie dans le blxock content et on l'a remplacé par un titre.
-Cela fonctionne.
-
-On peut donc à présent customiser cette page comme on le souhaite. Par exemple en rajoutant des cards.
-
-Modifications 
-
-Dans le fichiers layout.html.twig je modifie la ligne 15. Je l'ai dupliquée et retiré la partie centrale.
-
-        {{ block('content_title')|striptags|raw }}
+     public function getFullname(): ?string
+    {
+        return $this->firstname . ' ' . $this->lastname;
+    }
 
 
-Ensuite, le page-title devient title tout court :
+Puis dans src\Controller\Admin\DashboardController.php
 
-        <title>{% block title %} Hello 🤑{% endblock %}</title>
-
-
-Cela va permettre de nommer l'onglet de la page. Auparavant, c'était le nom du titre de la page. Là on a deux entitées distincs et indépendantes.
-
-En effet, c'est dans welcome.yaml qu'on a le contenu du milieu du dashboard.
-
+    public function configureUserMenu(UserInterface $user): UserMenu
+    {
+        return parent::configureUserMenu($user)
+        ->setName($user->getFullname());
+    }
 
 
+Cela remplacera l'adresse email à droite par le nom et prénom
+
+***
+
+## Créer les CRUD pour l'admin manquants 
+
+        symfony console make:admin:crud
+
+- fleet
+- mark
+- rental
+- seat
+- type
+
+Et dans src\Controller\Admin\DashboardController.php
+Puis on décommente les lignes commentées (47 -48 -49)
 
 
-
-
-
-
-
+Ensuite, on rajoute dans les YIELD les lignes necessaires (copier coller des autres en modifiant les classes.) Ne **PAS** oublier en entête de rajouter use App\Entity\Fleet; etc pour que cela fonctionne. Sinon cela va donenr une erreur.
 
 ### Actions a réaliser
 > -  refaire le merise
@@ -579,5 +572,11 @@ En effet, c'est dans welcome.yaml qu'on a le contenu du milieu du dashboard.
 > -  faire le zooning
 > -  configurer l'envoie de mail (https://www.copier-coller.com/envoyer-des-mails-en-local-avec-wamp/)
 > - sur le dashboard faire en sorte que dès que'on va dans un lien l'url ne soit pas crappy
- 
+> - créer un user depuis le dashboard ne hash pas le PW
+> - partie utilisateur a créer
+> - dashboard - changer les icones
+> - dashboard - FAIRE LE BILAN DE CE QUON DOIT FAIRE
+> - organiser les dossier
+> - redirections à faire
+> 
 >
