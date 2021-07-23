@@ -27,13 +27,14 @@ class RegistrationFormType extends AbstractType
         ->add('firstname', TextType::class, ['label' => 'Prénom',
         'label_attr' =>['class' => 'form-label'],
         'attr' =>['class' => 'form-control'],])
-        ->add('birthDate', BirthdayType::class, ['label' => 'Date de naissance',
-        'label_attr' =>['class' => 'form-label'],
-        'placeholder' => [
-            'year' => 'Année', 'month' => 'Mois', 'day' => 'Jour',
-        ],
-        ])
-        ->add ('phone', TextType::class,['label'=> 'numéro de téléphone',
+        ->add('birthDate',BirthdayType::class,
+            ['label' => 'Date de naissance',
+            'placeholder' => [
+                'year' => 'Année', 'month' => 'Mois', 'day' => 'Jour',
+            ],
+            'label_attr'=>['class' => 'form-label'],
+            ])
+        ->add('phone', TextType::class,['label'=> 'numéro de téléphone',
         'label_attr'=>['class' => 'form-label'],
         'attr' =>['class' => 'form-control'],
         ])
@@ -68,9 +69,9 @@ class RegistrationFormType extends AbstractType
                 ],
                 
             ])
-            ->add('submit',SubmitType::class,
+            ->add('Sauvegarder',SubmitType::class,
             [
-            'label' => 'Enregistrer',
+            'label' => $options['button_label'],
             'attr' => ['class' => 'btn btn-outline-success']
             ]
             )  
@@ -81,6 +82,7 @@ class RegistrationFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'button_label' =>''
         ]);
     }
 }

@@ -563,7 +563,110 @@ Et dans src\Controller\Admin\DashboardController.php
 Puis on décommente les lignes commentées (47 -48 -49)
 
 
-Ensuite, on rajoute dans les YIELD les lignes necessaires (copier coller des autres en modifiant les classes.) Ne **PAS** oublier en entête de rajouter use App\Entity\Fleet; etc pour que cela fonctionne. Sinon cela va donenr une erreur.
+Ensuite, on rajoute dans les YIELD les lignes necessaires (copier coller des autres en modifiant les classes.) Ne **PAS** oublier en entête de rajouter use App\Entity\Fleet; etc pour que cela fonctionne. Sinon cela va donner une erreur.
+
+### Customisation de la navBar
+
+Un peu de travail bootstrap pour rendre joli.
+
+Ensuite, on veut donner les instructions suivantes :
+
+  - Si je ne suis pas connecté, je veux le bouton de coqnnexion
+  - Si je suis connecté, je peux voir Mon profil et le bouton Déconnexion
+  - Si je suis connecté ET que je suis un admin, je veux le bouton Dashboard.
+
+Cela va se traduire par :
+
+
+        <li class="nav-item">
+            {% if app.user %}
+                {% if app.user and 'ROLE_ADMIN' in app.user.roles %}
+                    <li class="nav-item">
+                        <a class="nav-link link-info" href="{{ path('admin') }}">Tableau de bord</a>
+                    </li>
+                {% endif %}
+                    <li class="nav-item"> <a class="nav-link link-info" href="{{ path('user_show', {id:app.user.id}) }}">Mon profil</a></li>
+                    <li><a class="nav-link link-info" href="/logout">Déconnexion</a></li>
+                {% else %}
+                    <li><a class="nav-link link-info"href="/login">Connexion</a></li>
+                {% endif %}
+        </li> 
+
+---
+
+### Modification de la route d'accès 
+
+Dans config/routes.yalm on remplace /home par /
+
+---
+
+### Ajout de boutons de controles dans le Dashboard
+
+Dans le src\Controller\Admin\DashboardController.php
+on a rajouté 
+
+        yield MenuItem::linktoDashboard('Dashboard', 'fa fa-home');
+        yield MenuItem::linkToUrl('Accueil', 'fa fa-home','/' );
+        yield MenuItem::linkToLogout('Déconnexion', 'fa fa-sign-out-alt');
+
+Ici le bouton déconnexion a été remonté en haut mais c'est un choix personnel.
+
+***
+### Page d'édition pour l'utilisateur
+
+ - 1 - Dans templates\user\_form.html.twig mise en commentaire de la ligne 
+
+        <button class="btn">{{ button_label|default('Sauvegarder') }}</button>
+
+- 2 - Dans edit.html.twig on commente la ligne suivante pour interdire la suppression du profil par l'utilisateur
+
+        {#{{ include('user/_delete_form.html.twig') }}#}
+
+- 3 - Dans src\Form\RegistrationFormType.php, et plus précisément dans la  public function configureOptions(OptionsResolver $resolver), on rajoute
+        
+        'button_label' =>''
+
+***
+
+### Ajout du lien de création de compte dans la navbar
+
+Ici pas grand chose à rajouter, c'est un simple copier/coller et un changement de direction / nom
+
+
+***
+
+### Préparation du dashboard pour l'affichage.
+
+Dans un premier temps, bien s'assurer que le extend est
+
+        {% extends '@EasyAdmin/page/content.html.twig' %}
+
+Ensuite, pour mettre le titre, ce sera comme d'habitude dans 
+
+        {% block page_title 'Hello' %}
+
+De là, il faut bien veiller à mettre 
+
+        {% block page_content %}
+
+En effet, le dashboard est particulier dans le sens où il est composé de deux parties (visibles plus clairement sur la page utilisateurs par exemples)
+ - une petite partie de quelques pixels
+ - une grande partie.
+
+La où ça peut coincer. Il est possible de créer les deux blocks
+  - page_content
+  - content
+  
+
+En considérant la particularité de la structure de ce dashboard, Si on se place en **content**
+et qu'on met une div en row, alors cela va se placer **DANS** la petite bande.
+Donc même si on fait des cartes alignées, elles vont être l'une en dessous de l'autre et sur une petite largeur. Ce que l'on n'a pas si on ne met qu'une seule et unique div.
+
+Pour pouvoir aller dans la grande partie, on va mettre page_content.
+
+et dedans on peut mettre les cards que l'on souhaite.
+
+
 
 ### Actions a réaliser
 > -  refaire le merise
@@ -576,7 +679,9 @@ Ensuite, on rajoute dans les YIELD les lignes necessaires (copier coller des aut
 > - partie utilisateur a créer
 > - dashboard - changer les icones
 > - dashboard - FAIRE LE BILAN DE CE QUON DOIT FAIRE
-> - organiser les dossier
+> - organiser les dossiers
 > - redirections à faire
+> - ajouter une barre  de navigation dans le dashboard
+> - Page Edit - cassé
 > 
->
+> 

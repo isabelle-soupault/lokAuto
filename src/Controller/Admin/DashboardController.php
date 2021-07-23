@@ -41,54 +41,48 @@ class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linktoDashboard('Dashboard', 'fa fa-home');
+yield MenuItem::linktoDashboard('Dashboard', 'fas fa-tachometer-alt');
+yield MenuItem::linkToUrl('Accueil', 'fa fa-home','/' );
+yield MenuItem::linkToLogout('Déconnexion', 'fa fa-sign-out-alt');
         // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
 
 
 // Utilisateurs
 
-        yield MenuItem::section('Utilisateurs');
-        yield MenuItem::linkToCrud('Liste', 'fas fa-users', User::class);
-        yield MenuItem::linkToCrud('Ajout', 'fas fa-user-plus', User::class)->setAction('new');
-        yield MenuItem::section('Locations');
-        yield MenuItem::linkToCrud('Liste', 'fas fa-car', Rental::class);
-        yield MenuItem::linkToCrud('Ajout', 'fas fa-user-plus', Rental::class)->setAction('new');
+yield MenuItem::section('Utilisateurs');
+yield MenuItem::linkToCrud('Liste', 'fas fa-users', User::class);
+yield MenuItem::linkToCrud('Ajout', 'fas fa-user-plus', User::class)->setAction('new');
+
+// Location
+yield MenuItem::section('Locations');
+yield MenuItem::linkToCrud('Liste', 'fas fa-folder-open', Rental::class);
+yield MenuItem::linkToCrud('Ajout', 'fas fa-plus', Rental::class)->setAction('new');
+
+// Fleet
+yield MenuItem::section('Status');
+yield MenuItem::linkToCrud('Liste', 'fas fa-cogs', Fleet::class);
+yield MenuItem::linkToCrud('Ajout', 'fas fa-plus', Fleet::class)->setAction('new');
 
 // Voitures
-
         yield MenuItem::section('Voitures');
         yield MenuItem::linkToCrud('Liste', 'fas fa-car', Car::class);
         yield MenuItem::linkToCrud('Ajout', 'fas fa-plus', Car::class)->setAction('new');
-        yield MenuItem::section();
 
-// Fleet
-
-        yield MenuItem::section('Status');
-        yield MenuItem::linkToCrud('Liste', 'fas fa-car', Fleet::class);
-        yield MenuItem::linkToCrud('Ajout', 'fas fa-plus', Fleet::class)->setAction('new');
-        yield MenuItem::section();
-
-// Location
-
-        yield MenuItem::section('Location');
-        yield MenuItem::linkToCrud('Liste', 'fas fa-car', Rental::class);
-        yield MenuItem::linkToCrud('Ajout', 'fas fa-plus', Rental::class)->setAction('new');
-        yield MenuItem::section();
+//Types
+yield MenuItem::section('Type de véhicule');
+yield MenuItem::linkToCrud('Liste', 'fas fa-chair', Seat::class);
+yield MenuItem::linkToCrud('Ajout', 'fas fa-plus', Seat::class)->setAction('new');
 
 // Makes
-
-        yield MenuItem::section('Status');
-        yield MenuItem::linkToCrud('Liste', 'fas fa-car', Mark::class);
+        yield MenuItem::section('Marques');
+        yield MenuItem::linkToCrud('Liste', 'fas fa-copyright', Mark::class);
         yield MenuItem::linkToCrud('Ajout', 'fas fa-plus', Mark::class)->setAction('new');
-        yield MenuItem::section();
 
 // Seats
-
         yield MenuItem::section('Nombre de sièges');
-        yield MenuItem::linkToCrud('Liste', 'fas fa-car', Seat::class);
+        yield MenuItem::linkToCrud('Liste', 'fas fa-chair', Seat::class);
         yield MenuItem::linkToCrud('Ajout', 'fas fa-plus', Seat::class)->setAction('new');
-        yield MenuItem::section();
-        yield MenuItem::linkToLogout('Déconnexion', 'fa fa-sign-out-alt');
 
+        
     }
 }
