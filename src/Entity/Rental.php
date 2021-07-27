@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\RentalRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=RentalRepository::class)
@@ -19,13 +20,21 @@ class Rental
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\Type("DateTimeInterface")
      */
     private $startDate;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\Type("DateTimeInterface")
      */
     private $endtime;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class)
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $users;
 
     public function getId(): ?int
     {
@@ -52,6 +61,18 @@ class Rental
     public function setEndtime(\DateTimeInterface $endtime): self
     {
         $this->endtime = $endtime;
+
+        return $this;
+    }
+
+    public function getUsers(): ?User
+    {
+        return $this->users;
+    }
+
+    public function setUsers(?User $users): self
+    {
+        $this->users = $users;
 
         return $this;
     }

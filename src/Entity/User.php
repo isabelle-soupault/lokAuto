@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Entity;
-
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -24,6 +24,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Assert\NotBlank
+     * @Assert\Regex(
+     * pattern="/\w+[.\-]?\w+@\w+.[a-z]{2,3}$/"
+     * )
      */
     private $email;
 
@@ -39,24 +43,40 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $password;
 
     /**
-     * @ORM\Column(type="string", length=52)
+     * @ORM\Column(type="string", length=50)
+     * @Assert\NotBlank
+     * @Assert\Regex(
+     *  pattern="/^[a-zA-ZÀ-ÿ\-\ ]*$/",
+     *  message="Le nom doit contenir uniquement des lettres"
+     * )
      */
     private $firstname;
 
     /**
-     * @ORM\Column(type="string", length=51)
+     * @ORM\Column(type="string", length=50)
+     * @Assert\NotBlank
+     * @Assert\Regex(
+     *  pattern="/^[a-zA-ZÀ-ÿ\-\ ]*$/",
+     *  message="Le nom doit contenir uniquement des lettres"
+     * )
      */
     private $lastname;
 
-    /**
+   /**
      * @ORM\Column(type="string", length=14)
+     * @Assert\Regex(
+     * pattern="/^0[1-9]\d{8}$/",
+     * message="Veuillez entrer un prénom valide"
+     * )
      */
     private $phone;
 
     /**
      * @ORM\Column(type="date")
+     * @Assert\Type("DateTimeInterface")
+     * @var string A "Y-m-d" formatted value
      */
-    private $birthDate;
+    protected $birthDate;
 
     /**
      * @ORM\Column(type="boolean")
@@ -183,7 +203,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setPhone(string $phone): self
     {
-        $this->phone = $phone;
+        $this->phone = preg_replace('@[^0-9]@', '', $phone);
 
         return $this;
     }

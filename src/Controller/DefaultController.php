@@ -17,15 +17,15 @@ class DefaultController extends AbstractController {
         return $this->render('home.html.twig');
     }
 
-    public function admin()
-    {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        $users = $this->getDoctrine()->getRepository(User::class)->findAll();
-
-        return $this->render('admin.html.twig', [
-            //'articles' => $articles,
-            'users' => $users
-        ]);
+//    public function admin()
+//    {
+//        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+//        $users = $this->getDoctrine()->getRepository(User::class)->findAll();
+//
+//        return $this->render('admin.html.twig', [
+//            //'articles' => $articles,
+//            'users' => $users
+//        ]);
 
 
         //$articles = $this->getDoctrine()->getRepository(Article::class)->findBy(
@@ -33,5 +33,5 @@ class DefaultController extends AbstractController {
         //    ['lastUpdateDate' => 'DESC']
         //);
 
-    }
+
 }

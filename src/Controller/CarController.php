@@ -25,28 +25,28 @@ class CarController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/new", name="car_new", methods={"GET","POST"})
-     */
-    public function new(Request $request): Response
-    {
-        $car = new Car();
-        $form = $this->createForm(CarType::class, $car);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($car);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('car_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('car/new.html.twig', [
-            'car' => $car,
-            'form' => $form,
-        ]);
-    }
+//    /**
+//     * @Route("/new", name="car_new", methods={"GET","POST"})
+//     */
+//    public function new(Request $request): Response
+//    {
+//        $car = new Car();
+//        $form = $this->createForm(CarType::class, $car);
+//        $form->handleRequest($request);
+//
+//        if ($form->isSubmitted() && $form->isValid()) {
+//            $entityManager = $this->getDoctrine()->getManager();
+//            $entityManager->persist($car);
+//            $entityManager->flush();
+//
+//            return $this->redirectToRoute('car_index', [], Response::HTTP_SEE_OTHER);
+//        }
+//
+//        return $this->renderForm('car/new.html.twig', [
+//            'car' => $car,
+//            'form' => $form,
+//        ]);
+//    }
 
     /**
      * @Route("/{id}", name="car_show", methods={"GET"})
@@ -57,38 +57,38 @@ class CarController extends AbstractController
             'car' => $car,
         ]);
     }
-
-    /**
-     * @Route("/{id}/edit", name="car_edit", methods={"GET","POST"})
-     */
-    public function edit(Request $request, Car $car): Response
-    {
-        $form = $this->createForm(CarType::class, $car);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
-            return $this->redirectToRoute('car_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('car/edit.html.twig', [
-            'car' => $car,
-            'form' => $form,
-        ]);
-    }
-
-    /**
-     * @Route("/{id}", name="car_delete", methods={"POST"})
-     */
-    public function delete(Request $request, Car $car): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$car->getId(), $request->request->get('_token'))) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->remove($car);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('car_index', [], Response::HTTP_SEE_OTHER);
-    }
+//
+//    /**
+//     * @Route("/{id}/edit", name="car_edit", methods={"GET","POST"})
+//     */
+//    public function edit(Request $request, Car $car): Response
+//    {
+//        $form = $this->createForm(CarType::class, $car);
+//        $form->handleRequest($request);
+//
+//        if ($form->isSubmitted() && $form->isValid()) {
+//            $this->getDoctrine()->getManager()->flush();
+//
+//            return $this->redirectToRoute('car_index', [], Response::HTTP_SEE_OTHER);
+//        }
+//
+//        return $this->renderForm('car/edit.html.twig', [
+//            'car' => $car,
+//            'form' => $form,
+//        ]);
+//    }
+//
+//    /**
+//     * @Route("/{id}", name="car_delete", methods={"POST"})
+//     */
+//    public function delete(Request $request, Car $car): Response
+//    {
+//        if ($this->isCsrfTokenValid('delete'.$car->getId(), $request->request->get('_token'))) {
+//            $entityManager = $this->getDoctrine()->getManager();
+//            $entityManager->remove($car);
+//            $entityManager->flush();
+//        }
+//
+//        return $this->redirectToRoute('car_index', [], Response::HTTP_SEE_OTHER);
+//    }
 }

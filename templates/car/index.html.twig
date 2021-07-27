@@ -20,20 +20,18 @@
             <tr>
                 <td>{{ car.id }}</td>
                 <td>{{ car.price }}</td>
-                <td>{{ car.availability ? 'Yes' : 'No' }}</td>
+                <td>{{ car.availability ? 'Oui' : 'Non' }}</td>
                 <td>{{ car.registration }}</td>
                 <td>
-                    <a href="{{ path('car_show', {'id': car.id}) }}">show</a>
-                    <a href="{{ path('car_edit', {'id': car.id}) }}">edit</a>
+                    <a href="{{ path('car_show', {'id': car.id}) }}">Voir</a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="5">no records found</td>
+                <td colspan="5">Aucun véhicule de trouvé</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('car_new') }}">Create new</a>
 {% endblock %}

@@ -10,8 +10,9 @@ class CarCrudController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return Car::class;
+        
     }
-
+    
     /*
     public function configureFields(string $pageName): iterable
     {

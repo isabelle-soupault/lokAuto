@@ -5,19 +5,29 @@
 {% block page_content %}
 
 
-<div class="row">
-<div class="card" style="width: 18rem;">
-  <img src="..." class="card-img-top" alt="...">
-  <div class="card-body">
-    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-  </div>
-</div>
-<div class="card" style="width: 18rem;">
-  <img src="..." class="card-img-top" alt="...">
-  <div class="card-body">
-    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-  </div>
-</div>
+<div class="row text-center">
+    <div class="card px-2" style="width: 24rem;">
+        <img src="..." class="card-img-top" alt="...">
+        <div class="card-body">
+            <p class="card-text">
+            
+            {{ users }} </p>
+        </div>
+    </div>
+    <div class="card mx-2" style="width: 24rem;">
+        <img src="..." class="card-img-top" alt="...">
+        <div class="card-body">
+            <p class="card-text">
+            {{ cars }}</p>
+        </div>
+    </div>
+    <div class="card px-2" style="width: 24rem;">
+        <img src="..." class="card-img-top" alt="...">
+        <div class="card-body">
+            <p class="card-text">
+            {{ rentals }}</p>
+        </div>
+    </div>
 </div>
 
    

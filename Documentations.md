@@ -664,7 +664,160 @@ Donc même si on fait des cartes alignées, elles vont être l'une en dessous de
 
 Pour pouvoir aller dans la grande partie, on va mettre page_content.
 
-et dedans on peut mettre les cards que l'on souhaite.
+Et dedans on peut mettre les cards que l'on souhaite.
+
+
+### Calculer le nombre total d'inscrits.
+
+Cela se fait en 3 étapes.
+
+ - Dans userRepository
+  
+
+    public function countUsers(): int{
+            return $this->createQueryBuilder('u')
+                ->select('count(u.id)')
+                ->getQuery()
+                ->getSingleScalarResult();
+        }
+
+  - Dans DashboardController // fonction index on remplace ce qu'il y a par
+                $em = $this->getDoctrine()->getManager();
+        $usersRepository = $em->getRepository(User::class);
+        $userNbr = $usersRepository->countUsers();
+        return $this->render('admin/dashboard.html.twig', ['users' => $userNbr]);
+
+  - Et pour finir, dans dashboard.html.twig on appelle
+            {{ users }}
+
+
+**Remarque** on peut améliorer la requête en retirant $userNbr et en mettant sa "valeur" directement dans le return. Ce qui nous donne
+
+            return $this->render('admin/dashboard.html.twig', ['users' => $usersRepository->countUsers()]);
+
+On fait maintenant la même chose pour les voitures et les locations.
+
+
+### Création du Crud pour le rental
+
+On refait comme d'habitude :
+php bin/console make:crud
+
+
+## Gestion de de la page Nouvelle location
+
+
+### Création de fixtures
+
+Les fixtures permettent de remplir les bases de données avec des informations plus ou moins fictive pour pouvoir faire des tests.
+Cela commence par l'installation du 
+        composer require --dev doctrine/doctrine-fixtures-bundle
+
+Ensuite, cela installe un fichier dans SRC/ DataFixtures
+
+Dans le fichier créé src\DataFixtures\AppFixtures.php on va pouvoir y mettre les générateurs de données.
+
+Ensuite, il faut remplir ces informations. Pour cela on va utiliser le code suivant :
+
+              // Type
+        $typeList=['citadine','berline','SUV','Break'];
+        foreach ($typeList as $i){
+        $seat = new Type();
+        $seat->setTypeList($i);
+        $manager->persist($type);
+        }
+
+Ensuite, une fois que tout est réalisé, on doit entrer dans le terminal :
+
+        php bin/console doctrine:fixtures:load
+
+**ATTENTION**
+
+En mettant simplement cette commande, cela va purger complêtement la BDD. C'est à dire que si on a fait des entrées en amont, cela sera purement et simplement supprimé.
+
+Pour éviter cela, on va rajouter --append
+Ce qui donne 
+
+        php bin/console doctrine:fixtures:load --append
+
+
+
+
+## Ajout des vérifications dans les formulaires
+
+### Regex
+
+**rappel** pour tester, aller sur le [site](https://regex101.com)
+[Autre site](https://onlinehelp.opswat.com/dlp/1.3_Sample_regular_expressions.html)
+
+3  indicateurs de conditions qui concerne que ce qui est directement avant le conditionneur.
+   - ? => oui ou non
+   - \+ => une fois ou l'infini
+   - \* => zero fois ou plus 
+
+Ce qu'on met après un bloc peut également être conditionné. Mais il existe d'autres choses comme :
+
+
+  - {x,y}
+x sera le minimum de fois où ont veut le voir et y le maximum de fois où on le veut.
+  - {x}
+x sera le nombre strict d'éléments qu'on veut
+  - {x,}
+x, null signifie au moins
+  - []
+permet de définir un groupe. 
+Exemple \[012] va aller chercher des chiffres qui sont soient 0 ou 1 ou 2 un nombre de fois indeterminé Mais la vérification se fera caractère par caractère.
+
+  - cas du -
+  
+Il permet d'aller de a à z dans le cas de \[a-z]
+A partir de là, on peut faire pareil avec les majuscules.
+
+- \[\d] est équivalent d'un \[o-9]
+- \[\w] prend les majuscules, minuscules et chiffres
+
+
+[CheatSheet](https://www.rexegg.com/regex-quickstart.html)
+
+Globalement c'est tout ce qu'il y a besoin de savoir. Ensuite, c'est juste des combos de ces données
+
+### Regex pour le numéro de téléphone
+
+L'idée ici est de permettre de rajouter 4 espaceurs où on le souhaite 
+
+Donc cela se fait en 2 étapes :
+  - dans la fonction setPhone, on remplace $this (et tout le reste) par
+
+        $this->phone = preg_replace('/[^0-9]/', '', $phone);
+
+  - dans le private phone, on met
+
+        /**
+     \* @ORM\Column(type="string", length=14)
+     \* @Assert\Regex(
+     \* pattern="/^0[1-9]\d{8}$/",
+     \* message="Veuillez entrer un prénom valide"
+     \* )
+     \*/
+
+Ici, la preg_replace va dire que tout ce qui n'est pas chiffre est remplacé par un ensemble vide qu'on exclue. Donc ça va sortir uniquement des chiffres
+
+Une fois toutes les vérifications dans user de réalisés on peut faire pareil dans rental
+
+Et on a ainsi terminé les vérifications !
+
+### Amélioration du formulaire de réservation
+
+ - retrait du bouton dans _form
+ - ajout du bouton dans RentalType
+
+        ->add('book',SubmitType::class,
+            [
+            'label' => 'Réserver',
+            'attr' => ['class' => 'btn btn-outline-success']]
+            )
+
+ - traduction de la page rental/new.html.twig
 
 
 
@@ -674,14 +827,21 @@ et dedans on peut mettre les cards que l'on souhaite.
 > -  faire le mokup
 > -  faire le zooning
 > -  configurer l'envoie de mail (https://www.copier-coller.com/envoyer-des-mails-en-local-avec-wamp/)
-> - sur le dashboard faire en sorte que dès que'on va dans un lien l'url ne soit pas crappy
+> - sur le dashboard faire en sorte que dès qu'on va dans un lien l'url ne soit pas crappy
 > - créer un user depuis le dashboard ne hash pas le PW
 > - partie utilisateur a créer
-> - dashboard - changer les icones
+
 > - dashboard - FAIRE LE BILAN DE CE QUON DOIT FAIRE
-> - organiser les dossiers
+>
 > - redirections à faire
-> - ajouter une barre  de navigation dans le dashboard
-> - Page Edit - cassé
+> - REGEX / vérifs formulaires
+> - intégrer images dans BDD
+> - intégrer des véhicules à louer
+> - dashboard : mettre une boucle pour ne pas avoir la répétition dans les cards
+> - résoudre le problème d'accès aux autres users ==> Passer par UserInterface ?
+ 
+> 
+
+
 > 
 > 

@@ -47,4 +47,11 @@ class RentalRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function countRentals(): int{
+        return $this->createQueryBuilder('u')
+            ->select('count(u.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

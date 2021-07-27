@@ -47,4 +47,10 @@ class CarRepository extends ServiceEntityRepository
         ;
     }
     */
+    public function countCars(): int{
+        return $this->createQueryBuilder('u')
+            ->select('count(u.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

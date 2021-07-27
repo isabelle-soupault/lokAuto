@@ -8,6 +8,8 @@ use App\Entity\User;
 use App\Entity\Fleet;
 use App\Entity\Mark;
 use App\Entity\Seat;
+use App\Entity\Type;
+use App\Repository\UserRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
@@ -24,8 +26,17 @@ class DashboardController extends AbstractDashboardController
     public function index(): Response
     {
         //return parent::index();
-        return $this->render('admin/dashboard.html.twig');
+        $em = $this->getDoctrine()->getManager();
+        $usersRepository = $em->getRepository(User::class);
+        $carsRepository = $em->getRepository(Car::class);
+        $rentalsRepository = $em->getRepository(Rental::class);
+        //$userNbr = $usersRepository->countUsers();
+        return $this->render('admin/dashboard.html.twig', ['users' => $usersRepository->countUsers(), 
+        'cars' => $carsRepository->countCars(),
+        'rentals'=> $rentalsRepository->countRentals()
+    ]);
     }
+    
 
     public function configureDashboard(): Dashboard
     {
@@ -46,9 +57,7 @@ yield MenuItem::linkToUrl('Accueil', 'fa fa-home','/' );
 yield MenuItem::linkToLogout('Déconnexion', 'fa fa-sign-out-alt');
         // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
 
-
 // Utilisateurs
-
 yield MenuItem::section('Utilisateurs');
 yield MenuItem::linkToCrud('Liste', 'fas fa-users', User::class);
 yield MenuItem::linkToCrud('Ajout', 'fas fa-user-plus', User::class)->setAction('new');
@@ -64,14 +73,14 @@ yield MenuItem::linkToCrud('Liste', 'fas fa-cogs', Fleet::class);
 yield MenuItem::linkToCrud('Ajout', 'fas fa-plus', Fleet::class)->setAction('new');
 
 // Voitures
-        yield MenuItem::section('Voitures');
-        yield MenuItem::linkToCrud('Liste', 'fas fa-car', Car::class);
-        yield MenuItem::linkToCrud('Ajout', 'fas fa-plus', Car::class)->setAction('new');
+yield MenuItem::section('Voitures');
+yield MenuItem::linkToCrud('Liste', 'fas fa-car', Car::class);
+yield MenuItem::linkToCrud('Ajout', 'fas fa-plus', Car::class)->setAction('new');
 
 //Types
 yield MenuItem::section('Type de véhicule');
-yield MenuItem::linkToCrud('Liste', 'fas fa-chair', Seat::class);
-yield MenuItem::linkToCrud('Ajout', 'fas fa-plus', Seat::class)->setAction('new');
+yield MenuItem::linkToCrud('Liste', 'fas fa-chair', Type::class);
+yield MenuItem::linkToCrud('Ajout', 'fas fa-plus', Type::class)->setAction('new');
 
 // Makes
         yield MenuItem::section('Marques');
@@ -82,7 +91,11 @@ yield MenuItem::linkToCrud('Ajout', 'fas fa-plus', Seat::class)->setAction('new'
         yield MenuItem::section('Nombre de sièges');
         yield MenuItem::linkToCrud('Liste', 'fas fa-chair', Seat::class);
         yield MenuItem::linkToCrud('Ajout', 'fas fa-plus', Seat::class)->setAction('new');
-
         
+    }
+
+    public function showUserNumber(UserRepository $userRepo){
+        $userNbr = $userRepo->countUsers();
+        return $this->render('admin/dashboard.html.twig', ['users' => $userNbr]);
     }
 }

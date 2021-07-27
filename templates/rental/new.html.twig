@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle location{% endblock %}
+
+{% block body %}
+    <h1 class="text-center m-3">Réservez votre véhicule</h1>
+
+    {{ include('rental/_form.html.twig') }}
+
+    <a href="{{ path('rental_index') }}">Retourner à l'accueil</a>
+{% endblock %}
