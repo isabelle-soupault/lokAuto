@@ -414,6 +414,7 @@ Après quelques tests, IsGranted s'avère n'être possible que pour Symfony6 hor
 #IsGranted est à revoir plus **TARD** !
 
 ***
+***
 
 ## Un peu de front !!
 
@@ -447,8 +448,10 @@ On retourne dans routes.yaml et on y change la seconde partie par
             path: /admin
             controller: App\Controller\Admin\DashboardController::index
 
+***
+***
 
-### Ajout des CRUD pour le dashboard
+## Ajout des CRUD pour le dashboard
 
         symfony console make:admin:crud
 
@@ -474,10 +477,15 @@ Maintenant, on rajoute le code suivant dans \src\Controller\Admin\DashboardContr
 
 Certaines parties sont commentées car on ne peut rien faire pour le moment.
 
+***
+
+
 ### Customisation de Easyadmin
 **ATTENTION** Cela partant dans tous les sens bien **TOUT** lire avant de suivre
 
 On va se baser sur la vidéo de [Yoandev](https://www.youtube.com/watch?v=g6cYQ3IXGHY)
+
+***
 
 #### Titre en haut à gauche
 
@@ -505,7 +513,10 @@ En testant on a bien une page planche.
 
 On va essayer de faire sur le dashboard un truc plus sympa avec des cards
 
-#### Traductions
+***
+***
+
+### Traductions
 
 En utilisant la commande
 
@@ -548,6 +559,7 @@ Puis dans src\Controller\Admin\DashboardController.php
 Cela remplacera l'adresse email à droite par le nom et prénom
 
 ***
+***
 
 ## Créer les CRUD pour l'admin manquants 
 
@@ -564,6 +576,8 @@ Puis on décommente les lignes commentées (47 -48 -49)
 
 
 Ensuite, on rajoute dans les YIELD les lignes necessaires (copier coller des autres en modifiant les classes.) Ne **PAS** oublier en entête de rajouter use App\Entity\Fleet; etc pour que cela fonctionne. Sinon cela va donner une erreur.
+
+***
 
 ### Customisation de la navBar
 
@@ -592,13 +606,13 @@ Cela va se traduire par :
                 {% endif %}
         </li> 
 
----
+***
 
 ### Modification de la route d'accès 
 
 Dans config/routes.yalm on remplace /home par /
 
----
+***
 
 ### Ajout de boutons de controles dans le Dashboard
 
@@ -612,7 +626,9 @@ on a rajouté
 Ici le bouton déconnexion a été remonté en haut mais c'est un choix personnel.
 
 ***
-### Page d'édition pour l'utilisateur
+***
+
+## Page d'édition pour l'utilisateur
 
  - 1 - Dans templates\user\_form.html.twig mise en commentaire de la ligne 
 
@@ -626,6 +642,7 @@ Ici le bouton déconnexion a été remonté en haut mais c'est un choix personne
         
         'button_label' =>''
 
+***
 ***
 
 ### Ajout du lien de création de compte dans la navbar
@@ -666,6 +683,8 @@ Pour pouvoir aller dans la grande partie, on va mettre page_content.
 
 Et dedans on peut mettre les cards que l'on souhaite.
 
+***
+***
 
 ### Calculer le nombre total d'inscrits.
 
@@ -697,12 +716,15 @@ Cela se fait en 3 étapes.
 
 On fait maintenant la même chose pour les voitures et les locations.
 
+***
+***
 
 ### Création du Crud pour le rental
 
 On refait comme d'habitude :
 php bin/console make:crud
 
+***
 
 ## Gestion de de la page Nouvelle location
 
@@ -819,29 +841,274 @@ Et on a ainsi terminé les vérifications !
 
  - traduction de la page rental/new.html.twig
 
+****
+
+  ### Affichage du prénom de l'utilisateur
+
+  - 1 - dans src\Form\RentalType.php // fonction class RentalType extends AbstractType on ajoute
+        
+        
+        private $userRepository;
+            public function __construct(UserRepository $userRepository)
+            {
+                $this->userRepository = $userRepository;
+            }
+
+  - 2 - Toujours dans le même fichier mais dans la fonction public function configureOptions(OptionsResolver $resolver), ajouter
+
+        'user' => User::class
 
 
-### Actions a réaliser
-> -  refaire le merise
-> -  enregistrer le merise dans le dossier lamanu/LOKAUTO
-> -  faire le mokup
-> -  faire le zooning
-> -  configurer l'envoie de mail (https://www.copier-coller.com/envoyer-des-mails-en-local-avec-wamp/)
-> - sur le dashboard faire en sorte que dès qu'on va dans un lien l'url ne soit pas crappy
-> - créer un user depuis le dashboard ne hash pas le PW
-> - partie utilisateur a créer
+  - 3 - Dans src\Repository\UserRepository.php, ajouter tout en bas (il s'agit d'une modification de l'existant)
 
-> - dashboard - FAIRE LE BILAN DE CE QUON DOIT FAIRE
->
-> - redirections à faire
-> - REGEX / vérifs formulaires
-> - intégrer images dans BDD
-> - intégrer des véhicules à louer
-> - dashboard : mettre une boucle pour ne pas avoir la répétition dans les cards
-> - résoudre le problème d'accès aux autres users ==> Passer par UserInterface ?
+            public function findOneByID($value): ?User
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.id = :id')
+            ->setParameter('id', $value)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
+
+### Modifications de la page Rental/Index
+
+Ici, il s'agit simplement de rajouter des éléments dans le tableau comme le nom et prénom. Ce qui va donner :
+
+        <td>{{ app.user.lastname }}</td>
+        <td>{{ app.user.firstname }}</td>
+
+
+### Afficher de la page Editer du rental.
+
+Ici, il faut faire comme pour le new, c'est à dire, dans RentalController
+
+  -  dans la déclaration de la fonction Editer, on ajoute
+        
+        UserInterface $user
+    
+  - dans la fonction elle-même, on ajoute le tableau de new dans Edit
+
+        [            
+            'user' => $user,]);
+
+
+
+## Ajouter des voitures via le formulaire dans le dashboard.
+
+On a du dans un premier temps rajouter une clef ManyToOne dans l'entité Rental liée à cars
+
+
+### Plaque d'immatriculation unique
+
+Tout se passe dans car.php
+
+dans la classe car, en entête on rajoute
+
+        @UniqueEntity(fields={"registration"}, message="Cette plaque est déjà utilisée")
+
+Ensuite, pour private registration on change psour
+
+             * @ORM\Column(name="registration", type="string", length=10, unique=true)
+     * @Assert\Regex(
+     *  pattern="/^[a-zA-Z]{2}[. \/\-]?[0-9]{3}[. \/\-]?[a-zA-Z]{2}$/",
+     *  message="Plaque d'immatricultation type : 2 chiffres - 3 lettres - 2 chiffres"
+     * )
+
+Ici la regex permet de vérifier si on a bien 2 lettres 3 chiffres 2 lettres.
+Ensuite, le UniqueEntity permet de vérifier si la plaque d'immatriculation est ou non unique.
+
+On a également rajouté une contrainte pour retirer les tirets/ espaces etc de la plaque
+        
+        $this->registration =preg_replace('/[. \/ \-]/', '', $registration) ;
+
+dans setregistration
+
+
+### Création du formulaire rental pour créer une location en admin
+
+
+Dans Users.qphp, on ajoute
+
+        public function __toString()
+    {
+        return $this->lastname . ' ' . $this->firstname  . ' : ' . $this->email ;
+    }
+
+
+De la même façon, dans car.php on rajoute
+
+        public function __toString()
+        {
+            return $this->registration . ' ' . $this->makes  . ' ' . $this->seats . ' places' ;
+        }
+
+Et dans le src\Controller\Admin\RentalCrudController.php, il suffit de mettre 
+
+
+            AssociationField::new('users'),
+             AssociationField::new('cars')
+            
+
+***
+***
+
+### Customisation du dashboard
+
+Merci Mickael ! \o/
+            
+Dans src\Controller\Admin\DashboardController.php on ajoute en premier
+            
+        
+        public function configureAssets(): Assets{
+                return Assets::new()
+                    ->addCssFile('bundles/easyadmin/css/style.css');
+            }
+    
+Ensuite, dans public/ bundle easyAdmin ajouter le dossier css et dedans créer le fichier style.css
+
+***
+***
+
+## Upload des images
+    
+Avant d'aller plus loin, il est maintenant nécessaire de gérer l'upload. 
+En effet, sans lui, on ne peut pas créer des voitures. et donc on ne peut pas faire des réservations etc
+
+Installer le conposer vish
+
+         composer require vich/uploader-bundle
+
+Et dire OUI (Y) pour l'exécution.
+
+
+Make entity car
+
+Ensuite, dans l'entityCar, on rajoute en use
+
+        use Symfony\Component\HttpFoundation\File\File;
+        use Vich\UploaderBundle\Mapping\Annotation as Vich;
+
+On rajoute dans le premier orm
+
+        @Vich\Uploadable
+
+
+On remplace dans imageFIle
+
+           /**
+     * @Vich\UploadableField(mapping="cars", fileNameProperty="image")
+     * @var File
+     */
+
+
+
+Et on termine par un migration/migrate
+
+Dans CarCrudControler on rajoute :
+
+            TextField::new('imageFile')
+            ->setFormType(VichImageType::class)
+            ->hideOnIndex(),
+            ImageField::new('image')
+            ->setBasePath('/assets/img')
+            ->onlyOnIndex()
+
+    
+Maintenant dans Public, on créé un dossier assets et dedans on créé un nouveau dossier nommé img
+C'est là que vont se mettre toutes nos images.
+
+Ensuite, dans le fichier config\packages\vich_uploader.yaml on remplace product par le nom qu'on veut (ici cars) ainsi que uri_prefix: et upload_destination: où on indique les bons chemins.
+
+Il est ici important de vérifier que les noms soient les mêmes pour 
+
  
+            @Vich\UploadableField(mapping="cars", fileNameProperty="image")
+
+et
+
+            mappings:
+        cars:
+            uri_prefix: /assets/img
+
+
+
+***
+***
+
+
+### Création des cards pour chaque voiture
+
+Cela se passe dans index.
+Pas grand chose à dire, voir le code
+
+
+***
+***
+
+### Affichage des détails pour chaque voitue ( équivaut à show)
+
+ici on va dans car/show
+Pas grand chose non plus à dire ici, cf code.
+
+### Amélioration du bouton rental/new
+
+Bouton réserver fonctionnel au clic du show :
+
+Dans CarRepository
+
+
+                public function findOneByID($value): ?Car{
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.id = :id')
+            ->setParameter('id', $value)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+
+Dans rentalType
+
+    dans la fonction __construct, rajouter CarRepository $carRepository à la suite de $userRepository
+    Puis, dedans, rajsouter
+        
+        $this->carRepository = $carRepository;
+
+        Ensuite, au niveau de l'ensemble des adds, ajouter 
+
+                    ->add('cars',EntityType::class,['class' => Car::class,
+            'label' => 'Marque de la voiture',
+            'choice_label' => 'makes',
+            'choices' => [$this->carRepository->findOneByID($options['car'])]
+            ])
+
+
+
+
+
+
+> - Merise
+> - Zonning
+
+> **Dashboard**
+> - upload des images
+> - cards dashboard à customiser
+> - locations simultannées à interdire
+> - forcer la mise en MAJ des plaques d'immatriculation
+> - réservation -> ajouter PTT : prix de base *nb jour de résa
+> - upload images
+> - faire en sorte que la bdd de ne change pas, que le nom affiché dans mes réservations ne change pas
+> - permettre la modification de voitures dans edit
+> 
+
+> **Front**
+> - empécher locations simultannées d'une même voiture => a faire sur les deux crud
+> - accueil flingué
+> - voitures dispo +> ensemble des cards bucle toutes voitures dispo +card
+
+> - wish0
 > 
 
 
-> 
 > 

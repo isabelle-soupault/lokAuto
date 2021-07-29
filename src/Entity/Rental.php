@@ -36,6 +36,12 @@ class Rental
      */
     private $users;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Car::class)
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $cars;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -76,4 +82,17 @@ class Rental
 
         return $this;
     }
+
+    public function getCars(): ?Car
+    {
+        return $this->cars;
+    }
+
+    public function setCars(?Car $cars): self
+    {
+        $this->cars = $cars;
+
+        return $this;
+    }
+
 }

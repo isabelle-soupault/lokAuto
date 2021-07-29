@@ -3,32 +3,47 @@
 {% block title %}Car{% endblock %}
 
 {% block body %}
-    <h1>Car</h1>
+    <h1 class="m-5">Voici plus de détails pour la {{ car.makes }} {{ car.seats }} sièges que vous souhaitiez voir</h1>
 
-    <table class="table">
-        <tbody>
+	<div class="container">
+		<div class="row">
+			<div class="col">
+				<img src="{{asset('assets/img/' ~ car.image )}}" class="img-thumbnail" alt="..." style="height:20rem; width:auto">
+			</div>
+			<div class="col">
+				<table class="table">
             <tr>
-                <th>Id</th>
-                <td>{{ car.id }}</td>
-            </tr>
-            <tr>
-                <th>Price</th>
-                <td>{{ car.price }}</td>
-            </tr>
-            <tr>
-                <th>Availability</th>
-                <td>{{ car.availability ? 'Yes' : 'No' }}</td>
-            </tr>
-            <tr>
-                <th>Registration</th>
-                <td>{{ car.registration }}</td>
+                <th>Marque</th>
+                <td>{{ car.makes }}</td>
             </tr>
         </tbody>
-    </table>
+            <tr>
+                <th>Prix à la journée :</th>
+                <td>{{ car.price }} euros</td>
+            </tr>
+            <tr>
+                <th>Nombre de sièges</th>
+                <td>{{ car.seats }}</td>
+            </tr>  
+            <tr>
+                <th>Type de véhicule</th>
+                <td>{{ car.types }}</td>
+            </tr> 
 
-    <a href="{{ path('car_index') }}">back to list</a>
+            <tr>
+                <th>
+                <a href="{{ path('rental_new', {'id': car.id}) }}" class="btn btn-outline-success">Réserver</a>
+                {#<a href="{{ path('rental_new') }}" class="btn btn-outline-success">Réserver</a>#}
+                </th>
+                <th>
+                <a href="{{ path('car_index') }}" class="btn btn-outline-success text-right">Retour à la liste</a>
+                </th>
+            </tr>
+				</table>
+			</div>
+		</div>
+	</div>
 
-    <a href="{{ path('car_edit', {'id': car.id}) }}">edit</a>
 
-    {{ include('car/_delete_form.html.twig') }}
+
 {% endblock %}

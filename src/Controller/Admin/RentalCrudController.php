@@ -4,6 +4,8 @@ namespace App\Controller\Admin;
 
 use App\Entity\Rental;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 
 class RentalCrudController extends AbstractCrudController
 {
@@ -12,14 +14,17 @@ class RentalCrudController extends AbstractCrudController
         return Rental::class;
     }
 
-    /*
+
     public function configureFields(string $pageName): iterable
     {
         return [
-            IdField::new('id'),
-            TextField::new('title'),
-            TextEditorField::new('description'),
+            
+            DateField::new('startDate'),
+            DateField::new('endtime'),
+            AssociationField::new('users'),
+            AssociationField::new('cars')
+
         ];
     }
-    */
+
 }

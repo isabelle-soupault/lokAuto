@@ -14,7 +14,7 @@ class AppFixtures extends Fixture
     {
 
         // Type
-        $typeList=['citadine','berline','SUV','Break'];
+        $typeList=['Citadine','Berline','SUV','Break'];
         foreach ($typeList as $i){
         $type = new Type();
         $type->setTypes($i);
@@ -23,7 +23,7 @@ class AppFixtures extends Fixture
         
         //mark
 
-        $markList=['peugeot','ford','opel','mercedes','hyundai','honda','fiat','mitsubishi'];
+        $markList=['Peugeot','Ford','Opel','Mercedes','Hyundai','Honda','Fiat','Mitsubishi'];
         foreach ($markList as $i){
         $mark = new Mark();
         $mark->setMakes($i);

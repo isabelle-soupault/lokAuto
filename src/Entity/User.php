@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="`user`")
- * @UniqueEntity(fields={"email"}, message="There is already an account with this email")
+ * @UniqueEntity(fields={"email"}, message="Un compte existe déjà avec cette adresse email")
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -245,4 +245,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->firstname . ' ' . $this->lastname;
     }
-}
+
+
+    public function setFullname(string $fullname): self
+    {
+        $fullnameArray = explode(' ',$fullname);
+        $this->firstName = $fullnameArray[0];
+        $this->lastName = $fullnameArray[1];
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->lastname . ' ' . $this->firstname  . ' : ' . $this->email ;
+    }
+    
+} 

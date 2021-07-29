@@ -38,4 +38,8 @@ class Mark
 
         return $this;
     }
+    public function __toString()
+    {
+        return $this->makes;
+    }
 }

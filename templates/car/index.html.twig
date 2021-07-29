@@ -10,7 +10,6 @@
             <tr>
                 <th>Id</th>
                 <th>Price</th>
-                <th>Availability</th>
                 <th>Registration</th>
                 <th>actions</th>
             </tr>
@@ -20,7 +19,6 @@
             <tr>
                 <td>{{ car.id }}</td>
                 <td>{{ car.price }}</td>
-                <td>{{ car.availability ? 'Oui' : 'Non' }}</td>
                 <td>{{ car.registration }}</td>
                 <td>
                     <a href="{{ path('car_show', {'id': car.id}) }}">Voir</a>
@@ -33,5 +31,33 @@
         {% endfor %}
         </tbody>
     </table>
+
+
+	<div class="container mx-auto mt-4">
+        <div class="row">
+            {% for car in cars %}
+            <div class="col-md-4 h-100">
+                <div class="card" style="width: 18rem;">
+                    <img src="{{asset('assets/img/' ~ car.image )}}" class="card-img-top" alt="...">
+                    <div class="card-body ">
+                        <h5 class="card-title">{{ car.types}}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ car.price}}€</h6>
+                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                        {#<a href={{"car/show"}} class="btn btn-outline-success  mr-2">
+                            <i class="fas fa-link"></i>
+                            Voir</a>#}
+
+                        <a href="{{ path('car_show', {'id': car.id}) }}" class="btn btn-outline-success">Voir</a>
+                        <a href="{{ path('rental_new', {'id': car.id}) }}" class="btn btn-outline-success">
+                            <i class="fab fa-github"></i> 
+                            Réserver</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+
 
 {% endblock %}

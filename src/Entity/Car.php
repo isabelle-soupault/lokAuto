@@ -4,9 +4,15 @@ namespace App\Entity;
 
 use App\Repository\CarRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ORM\Entity(repositoryClass=CarRepository::class)
+ * @UniqueEntity(fields={"registration"}, message="Cette plaque est déjà utilisée")
+ * @Vich\Uploadable
  */
 class Car
 {
@@ -22,21 +28,17 @@ class Car
      */
     private $price;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $availability;
 
     /**
-     * @ORM\Column(type="string", length=10)
+     * @ORM\Column(name="registration", type="string", length=10, unique=true)
+     * @Assert\Regex(
+     *  pattern="/^[a-zA-Z]{2}[. \/\-]?[0-9]{3}[. \/\-]?[a-zA-Z]{2}$/",
+     *  message="Plaque d'immatricultation type : 2 chiffres - 3 lettres - 2 chiffres"
+     * )
      */
     private $registration;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Rental::class)
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $rentals;
+
 
     /**
      * @ORM\ManyToOne(targetEntity=Mark::class)
@@ -62,6 +64,17 @@ class Car
      */
     private $types;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $image;
+
+   /**
+     * @Vich\UploadableField(mapping="cars", fileNameProperty="image")
+     * @var File
+     */
+    private $imageFile;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -79,17 +92,6 @@ class Car
         return $this;
     }
 
-    public function getAvailability(): ?bool
-    {
-        return $this->availability;
-    }
-
-    public function setAvailability(bool $availability): self
-    {
-        $this->availability = $availability;
-
-        return $this;
-    }
 
     public function getRegistration(): ?string
     {
@@ -98,22 +100,11 @@ class Car
 
     public function setRegistration(string $registration): self
     {
-        $this->registration = $registration;
+        $this->registration =preg_replace('/[. \/ \-]/', '', $registration) ;
 
         return $this;
     }
 
-    public function getRentals(): ?Rental
-    {
-        return $this->rentals;
-    }
-
-    public function setRentals(?Rental $rentals): self
-    {
-        $this->rentals = $rentals;
-
-        return $this;
-    }
 
     public function getMakes(): ?Mark
     {
@@ -159,6 +150,35 @@ class Car
     public function setTypes(?Type $types): self
     {
         $this->types = $types;
+
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->registration . ' ' . $this->makes  . ' ' . $this->seats . ' places' ;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(string $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    public function getImageFile()
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageFile($imageFile): self
+    {
+        $this->imageFile = $imageFile;
 
         return $this;
     }

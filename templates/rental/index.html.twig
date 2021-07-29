@@ -8,7 +8,9 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
+                {#<th>Id</th>#}
+                <th>Nom</th>
+                <th>Prénom</th>
                 <th>StartDate</th>
                 <th>Endtime</th>
                 <th>actions</th>
@@ -17,12 +19,15 @@
         <tbody>
         {% for rental in rentals %}
             <tr>
-                <td>{{ rental.id }}</td>
-                <td>{{ rental.startDate ? rental.startDate|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ rental.endtime ? rental.endtime|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ app.user.lastname }}</td>
+                <td>{{ app.user.firstname }}</td>
+                {#<td>{{ rental.id }}</td>#}
+                <td>{{ rental.startDate ? rental.startDate|date('d/m/Y H:i:s') : '' }}</td>
+                <td>{{ rental.endtime ? rental.endtime|date('d/m/Y  H:i:s') : '' }}</td>
                 <td>
-                    <a href="{{ path('rental_show', {'id': rental.id}) }}">show</a>
-                    <a href="{{ path('rental_edit', {'id': rental.id}) }}">edit</a>
+                    <a href="{{ path('rental_show', {'id': rental.id}) }}">Afficher</a>
+                    <a href="{{ path('rental_edit', {'id': rental.id}) }}">Editer / Supprimer</a>
+                    
                 </td>
             </tr>
         {% else %}

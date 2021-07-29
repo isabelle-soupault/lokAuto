@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @Route("/rental")
@@ -28,10 +29,14 @@ class RentalController extends AbstractController
     /**
      * @Route("/new", name="rental_new", methods={"GET","POST"})
      */
-    public function new(Request $request): Response
+    public function new(Request $request, UserInterface $user): Response
     {
+        // dd($request);
+        // dd($user);
         $rental = new Rental();
-        $form = $this->createForm(RentalType::class, $rental);
+        $form = $this->createForm(RentalType::class, $rental,[            
+            'user' => $user,
+        'car' => $request->get('id')]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -61,9 +66,10 @@ class RentalController extends AbstractController
     /**
      * @Route("/{id}/edit", name="rental_edit", methods={"GET","POST"})
      */
-    public function edit(Request $request, Rental $rental): Response
+    public function edit(Request $request, Rental $rental, UserInterface $user): Response
     {
-        $form = $this->createForm(RentalType::class, $rental);
+        $form = $this->createForm(RentalType::class, $rental, [            
+            'user' => $user,]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

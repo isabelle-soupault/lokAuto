@@ -10,6 +10,7 @@ use App\Entity\Mark;
 use App\Entity\Seat;
 use App\Entity\Type;
 use App\Repository\UserRepository;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
@@ -20,6 +21,11 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class DashboardController extends AbstractDashboardController
 {
+    public function configureAssets(): Assets{
+        return Assets::new()
+            ->addCssFile('bundles/easyadmin/css/style.css');
+    }
+
     /**
      * @Route("/admin", name="admin")
      */
