@@ -61,4 +61,12 @@ class CarRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    //    public function findByIdUser($value): ?User{
+    //    return $this->createQueryBuilder('u')
+    //        ->andWhere('u.id = :id')
+    //        ->setParameter('id', $value)
+    //        ->getQuery()
+    //        ->getOneOrNullResult();
+    //}
 }

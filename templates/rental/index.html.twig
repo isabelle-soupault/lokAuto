@@ -11,32 +11,36 @@
                 {#<th>Id</th>#}
                 <th>Nom</th>
                 <th>Prénom</th>
-                <th>StartDate</th>
-                <th>Endtime</th>
+                <th>Début de location</th>
+                <th>Fin de location</th>
                 <th>actions</th>
             </tr>
         </thead>
-        <tbody>
-        {% for rental in rentals %}
+       <tbody>
+        {% set empty = 0 %}
+        {% if rentals %}
+            {% for rental in rentals %}
+                {% if app.user == rental.users %}
+                    {% set empty = 1 %}
+                    <tr>
+                        <td>{{ app.user.firstname }}</td>
+                        <td>{{ app.user.lastname }}</td>
+                        <td>{{ rental.startDate ? rental.startDate|date('d-m-Y H:i:s') : '' }}</td>
+                        <td>{{ rental.endTime ? rental.endTime|date('d-m-Y H:i:s') : '' }}</td>
+                        <td>
+                            <a href="{{ path('rental_show', {'id': rental.id}) }}">Voir</a>
+                            <a href="{{ path('rental_edit', {'id': rental.id}) }}">Modifier/Supprimer</a>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% if (not rentals) or (empty == 0) %}
             <tr>
-                <td>{{ app.user.lastname }}</td>
-                <td>{{ app.user.firstname }}</td>
-                {#<td>{{ rental.id }}</td>#}
-                <td>{{ rental.startDate ? rental.startDate|date('d/m/Y H:i:s') : '' }}</td>
-                <td>{{ rental.endtime ? rental.endtime|date('d/m/Y  H:i:s') : '' }}</td>
-                <td>
-                    <a href="{{ path('rental_show', {'id': rental.id}) }}">Afficher</a>
-                    <a href="{{ path('rental_edit', {'id': rental.id}) }}">Editer / Supprimer</a>
-                    
-                </td>
+                <td colspan="4">Aucun résultat</td>
             </tr>
-        {% else %}
-            <tr>
-                <td colspan="4">no records found</td>
-            </tr>
-        {% endfor %}
+        {% endif %}
         </tbody>
     </table>
 
-    <a href="{{ path('rental_new') }}">Create new</a>
 {% endblock %}

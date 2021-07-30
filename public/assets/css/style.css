@@ -1,0 +1,18 @@
+/*body{
+    background-color:rgb(250, 224, 202);
+}*/
+
+.imgbackground {
+background-image: url("../img/speedCog.jpg");
+background-size: cover;
+Height:50vh;
+
+}
+.alignedh1{
+    text-align: center;
+    font-size:40px;
+}
+
+.h1home{
+    padding-top:15vh;
+}

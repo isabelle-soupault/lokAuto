@@ -54,4 +54,7 @@ class RentalRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+
+
 }

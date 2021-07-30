@@ -1052,6 +1052,9 @@ Pas grand chose à dire, voir le code
 ici on va dans car/show
 Pas grand chose non plus à dire ici, cf code.
 
+***
+***
+
 ### Amélioration du bouton rental/new
 
 Bouton réserver fonctionnel au clic du show :
@@ -1082,6 +1085,75 @@ Dans rentalType
             'choice_label' => 'makes',
             'choices' => [$this->carRepository->findOneByID($options['car'])]
             ])
+Dans rentalController rajqouter au niveau du new
+
+         'car' => $request->get('id')]);
+
+Et ne pas oublier de le faire pour dans le Edit !!!!
+
+
+### Permettre à un utilisateur de se connecter si il veut faire une réservation
+
+Ajouter le code suivant dans template/car/index
+
+        <a href="{% if app.user %}{{ path('rental_new') }} {% else %} {{ path('app_login') }} {% endif %}" class="btn btn-outline-success"><i class="fab fa-github"></i>
+                                    Loue moi</a>
+
+Cela va remplacer le bouton et proposer une redirection sur login si pas connecté.
+
+
+***
+***
+### Limiter l'affichage des réservations dans rental
+
+        <tbody>
+        {% set empty = 0 %}
+        {% if rentals %}
+            {% for rental in rentals %}
+                {% if app.user == rental.users %}
+                    {% set empty = 1 %}
+                    <tr>
+                        <td>{{ app.user.firstname }}</td>
+                        <td>{{ app.user.lastname }}</td>
+                        <td>{{ rental.startDate ? rental.startDate|date('d-m-Y H:i:s') : '' }}</td>
+                        <td>{{ rental.endDate ? rental.endDate|date('d-m-Y H:i:s') : '' }}</td>
+                        <td>
+                            <a href="{{ path('rental_show', {'id': rental.id}) }}">Voir</a>
+                            <a href="{{ path('rental_edit', {'id': rental.id}) }}">Modifier/Supprimer</a>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% if (not rentals) or (empty == 0) %}
+            <tr>
+                <td colspan="4">Aucun résultat</td>
+            </tr>
+        {% endif %}
+        </tbody>
+
+
+***
+***
+
+### Edition du bouton éditer dans les locations
+
+Dans la fonction Edit, on ajoute simplement
+
+        'car' => $rental->getCars()->getId()]);
+
+
+
+***
+***
+
+
+## Ajout du fichier CSS et lien
+
+  - 1- Dans puplic/assets créer un dossier css et dedans rajouter le fichier style.css
+  - 2- Dans base.html rajouter la ligne suivante en prennant bien garde de le placer **APRES** le lien bootstrap
+
+        <link rel="stylesheet" href="assets/css/style.css">
 
 
 
@@ -1103,11 +1175,12 @@ Dans rentalType
 > 
 
 > **Front**
-> - empécher locations simultannées d'une même voiture => a faire sur les deux crud
+> - empêcher locations simultannées d'une même voiture => a faire sur les deux crud
 > - accueil flingué
 > - voitures dispo +> ensemble des cards bucle toutes voitures dispo +card
+> - show location incomplet
 
-> - wish0
+> - ~~wish0~~
 > 
 
 

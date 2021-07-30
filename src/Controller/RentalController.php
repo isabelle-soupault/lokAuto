@@ -69,7 +69,9 @@ class RentalController extends AbstractController
     public function edit(Request $request, Rental $rental, UserInterface $user): Response
     {
         $form = $this->createForm(RentalType::class, $rental, [            
-            'user' => $user,]);
+            'user' => $user,
+            'car' => $rental->getCars()->getId()]);
+            
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

@@ -39,12 +39,18 @@ class RentalType extends AbstractType
             'label' => 'Date d\'emprunt',
             'label_attr' => ['class' => 'form-label'],
             'attr' => ['class' => 'form-control'],
+            'placeholder' => [
+                'year' => 'Année', 'month' => 'Mois', 'day' => 'Jour', 'hour' => 'Heure', 'minute' => 'Min'
+            ]
             ])
             ->add('endtime' , DateTimeType::class,
             [
             'label' => 'Date de retour',
             'label_attr' => ['class' => 'form-label'],
             'attr' => ['class' => 'form-control'],
+            'placeholder' => [
+                'year' => 'Année', 'month' => 'Mois', 'day' => 'Jour', 'hour' => 'Heure', 'minute' => 'Min'
+            ]
             ])
             //->add('users', EntityType::class, ['class' => User::class, 'choice_label' => 'lastname'] )
             //->add('users', TextType::class, ['attr' => ['value' => $options['user']]])

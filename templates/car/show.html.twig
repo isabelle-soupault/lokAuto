@@ -32,7 +32,8 @@
 
             <tr>
                 <th>
-                <a href="{{ path('rental_new', {'id': car.id}) }}" class="btn btn-outline-success">Réserver</a>
+                <a href="{% if app.user %}{{ path('rental_new', {'id': car.id}) }} {% else %} {{ path('app_login') }} {% endif %}" class="btn btn-outline-success">
+                                    Louez moi</a>
                 {#<a href="{{ path('rental_new') }}" class="btn btn-outline-success">Réserver</a>#}
                 </th>
                 <th>
